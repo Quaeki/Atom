@@ -7,8 +7,4 @@ class SendMessageUseCase(private val repository: ChatRepository) {
         if (message.isBlank()) throw IllegalArgumentException("Сообщение не может быть пустым")
         return repository.sendMessage(message)
     }
-
-    suspend fun getAvailableModels(): List<String> {
-        return repository.getAvailableModels()
-    }
 }

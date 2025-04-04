@@ -16,14 +16,14 @@ class ChatViewModel(private val sendMessageUseCase: SendMessageUseCase) : ViewMo
     }
 
     fun onSendMessage() {
-        val message = state.value.inputText
-        if (message.isBlank()) return
+        val userMessage = state.value.inputText
+        if (userMessage.isBlank()) return
 
         state.value = state.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
-                val aiResponse = sendMessageUseCase(message)
-                val newMessage = Message(message, aiResponse)
+                val aiResponse = sendMessageUseCase(userMessage)
+                val newMessage = Message(userMessage, aiResponse)
                 state.value = state.value.copy(
                     messages = listOf(newMessage) + state.value.messages,
                     inputText = "",
@@ -33,19 +33,6 @@ class ChatViewModel(private val sendMessageUseCase: SendMessageUseCase) : ViewMo
                 state.value = state.value.copy(
                     isLoading = false,
                     inputText = "Ошибка: ${e.message ?: "Неизвестная ошибка"}"
-                )
-            }
-        }
-    }
-
-    fun loadModels() {
-        viewModelScope.launch {
-            try {
-                val models = sendMessageUseCase.getAvailableModels()
-                state.value = state.value.copy(availableModels = models)
-            } catch (e: Exception) {
-                state.value = state.value.copy(
-                    inputText = "Ошибка загрузки моделей: ${e.message ?: "Неизвестная ошибка"}"
                 )
             }
         }

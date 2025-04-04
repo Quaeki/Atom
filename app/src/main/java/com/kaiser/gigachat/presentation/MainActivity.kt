@@ -17,9 +17,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Инициализация RetrofitClient с контекстом
-        RetrofitClient.initialize(this)
-
         // Инициализация зависимостей
         val chatApi = RetrofitClient.chatApi
         val chatModel = ChatModel(chatApi)

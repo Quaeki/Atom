@@ -1,40 +1,43 @@
 package com.kaiser.gigachat.data.model
 
-import com.kaiser.gigachat.data.api.ChatApi
-import com.kaiser.gigachat.data.api.ChatRequest
-import com.kaiser.gigachat.data.api.Message
+import ChatApi
+import ChatRequest
+import Message
 import java.io.IOException
 
 class ChatModel(private val api: ChatApi) {
-    suspend fun sendMessage(message: String): String {
+    suspend fun sendMessage(
+        message: String,
+        model: String = "deepseek-chat",
+        stream: Boolean = false
+    ): String {
+        if (message.isBlank()) {
+            throw IllegalArgumentException("Сообщение не может быть пустым")
+        }
         val request = ChatRequest(
-            messages = listOf(
-                Message(role = "system", content = "You are a helpful assistant."),
-                Message(role = "user", content = message)
-            ),
-            model = "grok-1", // Using consistent model name
-            temperature = 0.5f,
-            max_tokens = 100
+            messages = listOf(Message(role = "user", content = message)),
+            model = model,
+            stream = stream
         )
-
         try {
-            val response = api.sendMessage(request) // Removed redundant API key parameter
-            return response.choices.firstOrNull()?.message?.content ?: "No response received"
+            val response = api.sendMessage(request)
+            return response.choices.firstOrNull()?.message?.content
+                ?: throw Exception("Ответ от сервера не содержит сообщений")
         } catch (e: IOException) {
-            throw IOException("Connection error: ${e.message}", e)
+            throw IOException("Ошибка соединения: ${e.message}", e)
         } catch (e: Exception) {
-            throw Exception("Error: ${e.message}", e)
+            throw Exception("Неизвестная ошибка: ${e.message}", e)
         }
     }
 
-    suspend fun getAvailableModels(): List<String> {
+    suspend fun getModels(): List<String> {
         try {
-            val response = api.getModels() // Removed redundant API key parameter
+            val response = api.getModels()
             return response.data.map { it.id }
         } catch (e: IOException) {
-            throw IOException("Error retrieving models: ${e.message}", e)
+            throw IOException("Ошибка соединения: ${e.message}", e)
         } catch (e: Exception) {
-            throw Exception("Unknown error: ${e.message}", e)
+            throw Exception("Неизвестная ошибка: ${e.message}", e)
         }
     }
 }

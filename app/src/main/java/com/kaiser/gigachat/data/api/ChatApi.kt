@@ -1,11 +1,10 @@
-package com.kaiser.gigachat.data.api
-
+import com.google.gson.annotations.SerializedName
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ChatApi {
-    @POST("v1/chat/completions")
+    @POST("/chat/completions")
     suspend fun sendMessage(
         @Body request: ChatRequest
     ): ChatResponse
@@ -16,12 +15,10 @@ interface ChatApi {
 
 data class ChatRequest(
     val messages: List<Message>,
-    val model: String = "grok-1", // Changed to grok-1 which is more likely to be available
-    val stream: Boolean = false,
-    val temperature: Float = 0.7f,
-    val max_tokens: Int = 150,
-    val top_p: Float = 1.0f,
-    val frequency_penalty: Float = 0.0f
+    val model: String = "deepseek-chat",
+    val temperature: Double = 0.7,
+    val max_tokens: Int = 2048,
+    val stream: Boolean = false // Добавлено
 )
 
 data class Message(
@@ -30,26 +27,29 @@ data class Message(
 )
 
 data class ChatResponse(
-    val id: String = "",
-    val objectType: String = "", // Changed from "object" to "objectType"
-    val created: Long = 0,
-    val model: String = "",
-    val choices: List<Choice> = emptyList()
+    val choices: List<Choice>,
+    val usage: Usage?
 )
 
 data class Choice(
-    val index: Int = 0,
-    val message: Message = Message("", ""),
-    val finish_reason: String = ""
+    val message: Message,
+    val finish_reason: String?
+)
+
+data class Usage(
+    val prompt_tokens: Int,
+    val completion_tokens: Int,
+    val total_tokens: Int
 )
 
 data class ModelsResponse(
-    val objectType: String = "", // Changed from "object" to "objectType"
-    val data: List<Model> = emptyList()
+    val data: List<Model>,
+    @SerializedName("object") val `object`: String
 )
 
 data class Model(
     val id: String,
-    val objectType: String, // Changed from "object" to "objectType"
-    val created: Long
+    @SerializedName("object") val `object`: String,
+    val created: Long,
+    val owned_by: String
 )

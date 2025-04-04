@@ -7,8 +7,7 @@ class ChatRepositoryImpl(private val chatModel: ChatModel) : ChatRepository {
     override suspend fun sendMessage(message: String): String {
         return chatModel.sendMessage(message)
     }
-
-    override suspend fun getAvailableModels(): List<String> {
-        return chatModel.getAvailableModels()
+    override suspend fun getModels(): List<String> {
+        return chatModel.getModels()
     }
 }

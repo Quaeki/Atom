@@ -6,5 +6,6 @@ data class ChatState(
     val messages: List<Message> = emptyList(),
     val isLoading: Boolean = false,
     val inputText: String = "",
-    val availableModels: List<String> = emptyList() // Добавлено для хранения моделей
+    val availableModels: List<String> = emptyList(),
+    val error: String? = null
 )
